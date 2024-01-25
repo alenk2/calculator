@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kalkulator 1</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="buttons">
+        <a href="kalkulator1.html"><button class="switch">Kalkulator 1</button></a>
+        <a href="kalkulator2.html"><button class="switch">Kalkulator 2</button></a>
+        <a href="kalkulator3.html"><button class="switch">Kalkulator 3</button></a>
+    </div>
+
+    <table id="calculator">
+        <tr>
+            <td colspan="3"><input type="text" id="result"></td>
+            <td><input type="button" value="C" onclick="clear_display()" /> </td>
+            <td><input type="button" value="←" onclick="delete_last_input()"> </td>
+
+        </tr>
+        <tr>
+            <td><input type="button" value="1" onclick="append('1')"> </td>
+            <td><input type="button" value="2" onclick="append('2')"> </td>
+            <td><input type="button" value="3" onclick="append('3')"> </td>
+            <td><input type="button" value="/" onclick="append('/')"> </td>
+            <td><input type="button" value="^" onclick="append('^')"> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="4" onclick="append('4')"> </td>
+            <td><input type="button" value="5" onclick="append('5')"> </td>
+            <td><input type="button" value="6" onclick="append('6')"> </td>
+            <td><input type="button" value="*" onclick="append('*')"> </td>
+            <td><input type="button" value="√" onclick="append('√')"> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="7" onclick="append('7')"> </td>
+            <td><input type="button" value="8" onclick="append('8')"> </td>
+            <td><input type="button" value="9" onclick="append('9')"> </td>
+            <td><input type="button" value="-" onclick="append('-')"> </td>
+            <td><input type="button" value="+" onclick="append('+')"> </td>
+        </tr>
+        <tr>
+            <td><input type="button" value="0" onclick="append('0')" > </td>
+            <td><input type="button" value="." onclick="append('.')" > </td>
+            <td><input type="button" value="=" onclick="solve()"> </td>
+            <td><input type="button" value="(" onclick="append('(')"> </td>
+            <td><input type="button" value=")" onclick="append(')')"> </td>
+        </tr>
+    </table>
+    <div class="fileOutput">
+    <input type="file" id="fileInput" onchange="handleFile()">
+    <p id="output">Izberi datoteko</p>
+    </div>
+    <script> 
+        function append(val) {
+            document.getElementById("result").value += val;
+        }
+
+        function solve() {
+            let expression = document.getElementById("result").value;
+            try {
+                let result = evaluateExpression(expression);
+                document.getElementById("result").value = result;
+            } catch (error) {
+                document.getElementById("result").value = "Error";
+            }
+        }
+
+        function evaluateExpression(expression) {
+            return parseExpression(expression);
+        }
+
+        function parseExpression(expression) {
+            const precedence = {
+                '+': 1,
+                '-': 1,
+                '*': 2,
+                '/': 2,
+                '^': 3,
+            };
+
+            let tokens = expression.match(/(\d+(\.\d+)?|√(\d+(\.\d+)?|\.\d+)?|[+\-*/^()]|-)/g);
+
+            if (!tokens || tokens.length === 0) {
+                console.error("Invalid expression: Token error");
+                throw new Error("Invalid expression");
+            }
+
+            let output = [];
+            let operators = [];
+            let stack = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                let token = tokens[i];
+                console.log("Token:" + token);
+
+                if (!isNaN(parseFloat(token))) {
+                    output.push(parseFloat(token));
+                } else if (token.startsWith('√')) {
+                    let operand = parseFloat(token.substr(1));
+                    if (!isNaN(operand)) {
+                        output.push(Math.sqrt(operand));
+                    } else {
+                        console.error("Invalid expression: Square root operand is not a valid number");
+                        throw new Error("Invalid expression");
+                    }
+                } else if (token in precedence) {
+                    while (
+                        operators.length > 0 &&
+                        operators[operators.length - 1] !== '(' &&
+                        precedence[token] <= precedence[operators[operators.length - 1]]
+                    ) {
+                        output.push(operators.pop());
+                    }
+                    operators.push(token);
+                } else if (token === '(') {
+                    operators.push(token);
+                } else if (token === ')') {
+                    while (operators.length > 0 && operators[operators.length - 1] !== '(') {
+                        output.push(operators.pop());
+                    }
+                    if (operators.length === 0) {
+                        console.error("Invalid expression: Mismatched parentheses");
+                        throw new Error("Invalid expression");
+                    }
+                    operators.pop();
+
+                    if (operators.length > 0 && operators[operators.length - 1] === '√') {
+                        output.push(operators.pop());
+                    }
+                } else {
+                    console.error("Invalid token: " + token);
+                    throw new Error("Invalid token: " + token);
+                }
+            }
+
+            while (operators.length > 0) {
+                output.push(operators.pop());
+            }
+
+            for (let i = 0; i < output.length; i++) {
+                let token = output[i];
+                if (!isNaN(parseFloat(token))) {
+                    stack.push(token);
+                } else if (token === '√') {
+                    if (stack.length < 1) {
+                        console.error("Invalid expression: Not enough operands for square root");
+                        throw new Error("Invalid expression");
+                    }
+                    let operand = stack.pop();
+                    stack.push(Math.sqrt(operand));
+                } else if (token in precedence) {
+                    let operand2 = stack.pop();
+                    let operand1 = stack.pop();
+                    switch (token) {
+                        case '+':
+                            stack.push(operand1 + operand2);
+                            break;
+                        case '-':
+                            stack.push(operand1 - operand2);
+                            break;
+                        case '*':
+                            stack.push(operand1 * operand2);
+                            break;
+                        case '/':
+                            stack.push(operand1 / operand2);
+                            break;
+                        case '^':
+                            stack.push(Math.pow(operand1, operand2));
+                            break;
+                    }
+                }
+            }
+
+            if (stack.length === 1) {
+                return stack[0];
+            } else {
+                console.error("Invalid expression: Stack length is not 1");
+                throw new Error("Invalid expression");
+            }
+        }
+
+        function clear_display() {
+            document.getElementById("result").value = "";
+        }
+
+        function delete_last_input() {
+            let x = document.getElementById("result").value;
+            document.getElementById("result").value = x.slice(0, -1);
+        }
+        function handleFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const contents = e.target.result;
+                    processFileContents(contents);
+                };
+
+                reader.readAsText(file);
+            }
+        }
+        function processFileContents(contents) {
+            const expressions = contents.split('\n');
+            let results = '';
+
+            expressions.forEach((expression) => {
+                try {
+                    const result = evaluateExpression(expression.trim());
+                    results += `${expression} = ${result}<br>`;
+                } catch (error) {
+                    results += `${expression} = Napaka<br>`;
+                }
+            });
+
+            document.getElementById("output").innerHTML = results;
+        }
+    </script>
+</body>
+
+</html>

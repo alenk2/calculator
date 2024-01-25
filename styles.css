@@ -1,0 +1,70 @@
+	    .buttons{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-bottom: 40px;
+		}
+		button.switch{ 
+			padding: 20px 40px; 
+			background-color: gray; 
+			color: white; 
+			font-size: 24px; 
+			font-weight: bold; 
+			border: none; 
+			cursor:pointer;
+			margin-right: 5px;
+		}
+		button.switch a, a:active, a:visited, a:hover{
+			text-decoration: none;
+			color: white;
+		}
+		table { 
+			border: 1px solid black; 
+			margin-left: auto; 
+			margin-right: auto; 
+		} 
+
+		input[type="button"] { 
+			width: 100%; 
+			padding: 20px 40px; 
+			background-color: gray; 
+			color: white; 
+			font-size: 24px; 
+			font-weight: bold; 
+			border: none; 
+			cursor:pointer;
+		} 
+
+		input[type="text"] { 
+			padding: 20px 30px; 
+			font-size: 24px; 
+			font-weight: bold; 
+			border: none; 
+			border: 2px solid black;
+			width:100%;
+			box-sizing: border-box;
+		}
+
+		.fileOutput{
+			margin-top:25px;
+			display:flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+		.fileOutput p {
+			background-color: gray;
+			color: white;
+			font-size: 24px;
+            border: 1px solid black;
+			font-weight:bold;
+			padding:5px;
+		}
+		input[type="file"] { 
+			padding: 20px 20px; 
+			background-color: gray; 
+			color: white; 
+			font-size: 20px; 
+			font-weight: bold; 
+			border: 1px solid black;
+		} 

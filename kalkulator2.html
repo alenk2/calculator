@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kalkulator 2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js" integrity="sha512-BbVEDjbqdN3Eow8+empLMrJlxXRj5nEitiCAK5A1pUr66+jLVejo3PmjIaucRnjlB0P9R3rBUs3g5jXc8ti+fQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js" integrity="sha512-iphNRh6dPbeuPGIrQbCdbBF/qcqadKWLa35YPVfMZMHBSI6PLJh1om2xCTWhpVpmUyb4IvVS9iYnnYMkleVXLA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="buttons">
+        <a href="kalkulator1.html"><button class="switch">Kalkulator 1</button></a>
+        <a href="kalkulator2.html"><button class="switch">Kalkulator 2</button></a>
+        <a href="kalkulator3.html"><button class="switch">Kalkulator 3</button></a>
+    </div>
+  <table id="calcu">
+    <tr>
+      <td colspan="3"><input type="text" id="result"></td>
+      <td><input type="button" value="c" onclick="clr()" /></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="1" onclick="dis('1')" ></td>
+      <td><input type="button" value="2" onclick="dis('2')" ></td>
+      <td><input type="button" value="3" onclick="dis('3')" ></td>
+      <td><input type="button" value="4" onclick="dis('4')" ></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="5" onclick="dis('5')" ></td>
+      <td><input type="button" value="6" onclick="dis('6')" ></td>
+      <td><input type="button" value="7" onclick="dis('7')" ></td>
+      <td><input type="button" value="8" onclick="dis('8')" ></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="9" onclick="dis('9')" ></td>
+      <td><input type="button" value="0" onclick="dis('0')" ></td>
+      <td><input type="button" value="A" onclick="dis('A')" ></td>
+      <td><input type="button" value="B" onclick="dis('B')" ></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="C" onclick="dis('C')" ></td>
+      <td><input type="button" value="D" onclick="dis('D')" ></td>
+      <td><input type="button" value="E" onclick="dis('E')" ></td>
+      <td><input type="button" value="F" onclick="dis('F')" ></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="Bin" onclick="convertBase('bin')" /></td>
+      <td><input type="button" value="Oct" onclick="convertBase('oct')" /></td>
+      <td><input type="button" value="Hex" onclick="convertBase('hex')" /></td>
+      <td><input type="button" value="Dec" onclick="convertBase('dec')" /></td>
+    </tr>
+  </table>
+
+  <script>
+    function dis(val) {
+      document.getElementById("result").value += val;
+    }
+
+    function solve() {
+      let x = document.getElementById("result").value;
+      let y = math.evaluate(x);
+      document.getElementById("result").value = y;
+    }
+
+    function clr() {
+      document.getElementById("result").value = "";
+    }
+
+    function convertBase(base) {
+      let x = document.getElementById("result").value;
+      let decimalValue = 0;
+      if (base === 'dec') {
+        for (let i = 0; i < x.length; i++) {
+          let charCode = x.charCodeAt(i);
+          let digitValue;
+            if (charCode >= 48 && charCode <= 57) {
+              digitValue = charCode - 48;
+            } else if (charCode >= 65 && charCode <= 70) {
+              digitValue = charCode - 55;
+            } else if (charCode >= 97 && charCode <= 102) {
+              digitValue = charCode - 87; 
+            } else {
+              document.getElementById("result").value = "Invalid Hex input";
+             return;
+            }
+          decimalValue = decimalValue * 16 + digitValue;
+          }
+        document.getElementById("result").value = decimalValue;
+        return;
+      }
+      let result = "";
+      let quotient = Math.floor(Number(x));
+      let remainder;
+      while (quotient > 0) {
+        remainder = quotient % ((base === 'bin') ? 2 : (base === 'oct') ? 8 : 16);
+        result = (remainder < 10 ? String.fromCharCode(48 + remainder) : String.fromCharCode(55 + remainder)) + result;
+        quotient = Math.floor(quotient / ((base === 'bin') ? 2 : (base === 'oct') ? 8 : 16));
+      }
+      document.getElementById("result").value = result || "0";
+    }
+    
+  </script>
+</body>
+</html>
